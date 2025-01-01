@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ItemsController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Items;
 
@@ -17,35 +18,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/items', function () {
-        return view('items.items_list');
-    })->name('items.list');
-    
-    Route::get('/items/{id}', function ($id) {
-        return view('items.item_view');
-    });
-
-    Route::get('/item/new', function () {
-        return view('items.item_new');
-    });
-
-    Route::post('/items', function () {
-        $name = request('name');
-        $description = request('description');
-        $year = request('year');
-        $exists = true;
-        Items::create([
-            'name' => $name,
-            'description' => $description,
-            'year' => $year,
-            'exists'=>$exists,
-            'user_id' => auth()->id(),
-        ]);
-
-        session()->flash('status', 'Created!');
-
-        return to_route('items.list');
-    });
+    Route::get('/items', [ItemsController::class, 'index'])->name('items.list');
+    Route::get('/items/{id}', [ItemsController::class, 'show'])->name('items.show');
+    Route::get('/items/{id}/edit', [ItemsController::class, 'edit'])->name('items.edit');
+    Route::get('/item/new', [ItemsController::class, 'create'])->name('items.create');
+    Route::post('/items', [ItemsController::class, 'store'])->name('items.store');
 
     Route::get('/view-data/{data}', function ($data) {
         $data = DB::table($data)->get(); // Cambia 'users' por el nombre de tu tabla

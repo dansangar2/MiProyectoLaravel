@@ -7,10 +7,9 @@
 <a href="/item/new">Nuevo</a>
 <h1>Lista de objetos</h1>
 <ul>
-    <li><a >Ejemplo 1</a></li>
-    <li>Ejemplo 2</li>
-    <li>Ejemplo 3</li>
-    <li>Ejemplo 4</li>
+    @foreach ($items as $item)
+        <li><a href="/item/{{$item->id}}">{{$item->name}}</a> creado por {{$item->user->name}} <a href="{{route('items.edit', $item->id)}}">Editar</a></li>        
+    @endforeach
 </ul>
 
 @endsection

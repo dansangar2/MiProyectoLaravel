@@ -13,7 +13,9 @@ class ItemsController extends Controller
      */
     public function index()
     {
-        //
+        return view('items.items_list', [
+            'items' => Items::with('user')->get()
+        ]);
     }
 
     /**
@@ -21,7 +23,7 @@ class ItemsController extends Controller
      */
     public function create()
     {
-        //
+        return view('items.item_new');
     }
 
     /**
@@ -29,23 +31,42 @@ class ItemsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate = $request->validate([
+            'name' => ['required', 'min:3', 'max:13'],
+        ]);
+        $name = $request->get('name');
+        $description = $request->get('description');
+        $year = $request->get('year');
+        $exists = true;
+
+        auth()->user()->items()->create($validate
+            /*[
+            'name' => $name,
+            'description' => $description,
+            'year' => $year,
+            'exists'=>$exists,
+        */);
+
+        session()->flash('status', 'Created!');
+
+        return to_route('items.list');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Items $items)
+    public function show(Items $items = null)
     {
-        //
+        return view('items.item_view');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Items $items)
+    public function edit($items)
     {
-        //
+        $item = Items::findOrFail($items);
+        return view('items.item_new', ['item' => $item]);
     }
 
     /**
@@ -53,7 +74,24 @@ class ItemsController extends Controller
      */
     public function update(Request $request, Items $items)
     {
-        //
+        $validate = $request->validate([
+            'name' => ['required', 'min:3', 'max:13'],
+        ]);
+        $name = $request->get('name');
+        $description = $request->get('description');
+        $year = $request->get('year');
+        $exists = true;
+
+        auth()->user()->items()->create($validate
+            /*[
+            'name' => $name,
+            'description' => $description,
+            'year' => $year,
+            'exists'=>$exists,
+        */);
+
+        session()->flash('status', 'Edited!');
+        return to_route('items.list');
     }
 
     /**
