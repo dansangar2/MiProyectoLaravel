@@ -19,9 +19,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/items', [ItemsController::class, 'index'])->name('items.list');
+    Route::get('/items/new', [ItemsController::class, 'create'])->name('items.create');
     Route::get('/items/{id}', [ItemsController::class, 'show'])->name('items.show');
     Route::get('/items/{id}/edit', [ItemsController::class, 'edit'])->name('items.edit');
-    Route::get('/item/new', [ItemsController::class, 'create'])->name('items.create');
+    Route::put('/items/{id}', [ItemsController::class, 'update'])->name('items.update');
+    Route::delete('/items/{id}', [ItemsController::class, 'destroy'])->name('items.destroy');
     Route::post('/items', [ItemsController::class, 'store'])->name('items.store');
 
     Route::get('/view-data/{data}', function ($data) {

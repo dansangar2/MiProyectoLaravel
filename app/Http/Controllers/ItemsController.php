@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Items;
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 
 class ItemsController extends Controller
 {
+    use AuthorizesRequests, ValidatesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -33,7 +36,10 @@ class ItemsController extends Controller
     {
         $validate = $request->validate([
             'name' => ['required', 'min:3', 'max:13'],
+            'description' => [],
+            'year' => []
         ]);
+        $validate['exists'] = true;
         $name = $request->get('name');
         $description = $request->get('description');
         $year = $request->get('year');
@@ -55,9 +61,10 @@ class ItemsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Items $items = null)
+    public function show($items)
     {
-        return view('items.item_view');
+        $item = Items::findOrFail($items);
+        return view('items.item_view', ['item' => $item]);
     }
 
     /**
@@ -66,39 +73,39 @@ class ItemsController extends Controller
     public function edit($items)
     {
         $item = Items::findOrFail($items);
-        return view('items.item_new', ['item' => $item]);
+        $this->authorize('update', $item);
+        return view('items.item_edit', ['item' => $item]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Items $items)
+    public function update(Request $request, $items)
     {
+        $item = Items::findOrFail($items);
+        $this->authorize('update', $item);
+        
         $validate = $request->validate([
             'name' => ['required', 'min:3', 'max:13'],
+            'description' => [],
+            'year' => []
         ]);
-        $name = $request->get('name');
-        $description = $request->get('description');
-        $year = $request->get('year');
-        $exists = true;
+        $validate['exists'] = true;
+        
+        session()->flash('status', 'Updated!');
+        $item->update($validate);
 
-        auth()->user()->items()->create($validate
-            /*[
-            'name' => $name,
-            'description' => $description,
-            'year' => $year,
-            'exists'=>$exists,
-        */);
-
-        session()->flash('status', 'Edited!');
         return to_route('items.list');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Items $items)
+    public function destroy($items)
     {
-        //
+        $item = Items::findOrFail($items);
+        $this->authorize('delete', $item);
+        $item->delete();
+        return to_route('items.list')->with('status', 'Deleted!');
     }
 }

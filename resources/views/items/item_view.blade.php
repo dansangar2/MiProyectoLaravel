@@ -3,5 +3,5 @@
 @section('title', 'Listado de Objetos')
 
 @section('content')
-    <h1>Hola {{$id}}</h1>
+    <h1>Hola {{$item->name}}</h1>
 @endsection
